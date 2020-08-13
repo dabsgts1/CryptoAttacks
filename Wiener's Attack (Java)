@@ -1,0 +1,145 @@
+import java.util.*;
+class WienersAttack
+{
+    ArrayList<Long> cfTerms = new ArrayList<Long>();
+    String cfConverg[]; 
+    //long N = 160523347;
+    //long N = 90581;
+    //long e = 60728973;
+    //long e = 17993;
+    long N;
+    long e;
+    public void main()
+    {    
+        Scanner s=new Scanner(System.in);
+        System.out.println("Enter N");
+        N=s.nextLong();
+        System.out.println("Enter e");
+        e=s.nextLong();
+        ContinuedFractionTerms();
+        cfConverg=new String[cfTerms.size()];
+        CFConvergents();
+        boolean check=false;
+        for(int i=0; i<cfConverg.length; i++)
+        {
+            long k,d;
+            if(cfConverg[i].indexOf('/')==-1)
+            {
+                k=Integer.parseInt(cfConverg[i]);
+                d=1;
+            }
+            else
+            {
+                k=Integer.parseInt(cfConverg[i].substring(0, cfConverg[i].indexOf('/')));
+                d=Integer.parseInt(cfConverg[i].substring(cfConverg[i].indexOf('/')+1, cfConverg[i].length()));
+            }
+            if(k==0)
+                continue;
+            long PHI = (e*d-1)/k;
+
+            long b=-N+PHI-1;
+            long c=N;
+
+            long x1=(long)((-b+Math.pow((b*b-4*c),0.5))/2);
+            long x2=(long)((-b-Math.pow((b*b-4*c),0.5))/2);
+
+            if(x1*x2==N)
+            {
+                System.out.println("Cryptosystem Cracked!");
+                System.out.println("N = "+N);
+                System.out.println("p = "+x1);
+                System.out.println("q = "+x2);
+                System.out.println("e = "+e);
+                System.out.println("d = "+d);
+                System.out.println("k = "+k);
+                System.out.println("PHI(N) = "+PHI);
+                System.out.println("d < "+ (Math.pow(N,0.25)/3));
+                System.out.println("-------");
+                check=true;
+                break;
+            }
+        }
+        if(!check)
+            System.out.println("Not cracked");
+    }   
+
+    public void ContinuedFractionTerms()
+    {
+        //30=0.53+30
+        //53=1.30+23
+        long a,b,c,d;
+        a=e;
+        c=N;
+        b=a/c;
+        d=a%c;
+        cfTerms.add(b);
+        while(d!=0)
+        {
+            a=c;
+            c=d;
+            b=a/c;
+            d=a%c;
+            cfTerms.add(b);
+        }
+    }
+
+    public void CFConvergents()
+    {
+        for(int i=cfTerms.size()-1; i>=0; i--)
+        {
+            if(i==0)
+            {
+                cfConverg[0]=String.valueOf(cfTerms.get(0));
+                continue;
+            }
+            float sum=0f;
+            float a=1f,b=0f;
+            for(int j=i; j>=0; j--)
+            {
+                if(sum==0)
+                {
+                    a=cfTerms.get(j);
+                    b=cfTerms.get(j-1);
+                    sum=b+1/a;
+                    j--;
+                }
+                else
+                {
+                    sum=cfTerms.get(j)+1/sum;
+                }
+            }
+            cfConverg[i]=DtoF(sum);
+        }
+    }
+
+    public String DtoF(float n)
+    {
+        String ret="";
+        if (String.valueOf(n).indexOf('.')==-1)
+        {
+            ret=String.valueOf(n);
+            return ret;
+        }
+        int no_of_dec = String.valueOf(n).substring(String.valueOf(n).indexOf('.')+1,String.valueOf(n).length()).length();
+        /*if(no_of_dec>10)
+        {
+        n=Double.parseDouble(String.valueOf(n).substring(0,String.valueOf(n).length()-no_of_dec+10));
+        no_of_dec=10;
+        }*/
+        long num=(int)(n*Math.pow(10,no_of_dec));
+        long den=(int)(Math.pow(10,no_of_dec));
+
+        long x=Math.min(num,den);
+        long gcd=1;
+        for(long i=2; i<=x; i++)
+        {
+            if(num%i==0 && den%i==0)
+                gcd=i;
+        }
+
+        num=num/gcd;
+        den=den/gcd;
+        ret=num+"/"+den;
+        return ret;
+    }
+}
