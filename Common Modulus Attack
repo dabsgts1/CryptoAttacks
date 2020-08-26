@@ -1,0 +1,66 @@
+import java.util.*;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+class CommModAttack
+{
+    public static void main()
+    {
+        long N=143;
+        long c1=103;
+        long c2=9;
+        long e1=3;
+        double e2=4;
+        //assuming that gcd(e1, e2)=1
+        long a=modinv(e1, N);
+        double b=(1-a*e1)/e2;
+        //a*e1 + b*e2 = 1
+
+        String _c1=String.valueOf(c1);
+        int _a = (int)a;
+        String _c2=String.valueOf(modinv(c2,N));
+        int _b = (int)-b;
+        double dec= (b<0)?-(-b%1.0):(b%1.0);
+        double y2 = Math.pow(c2,dec);
+        //finding out the decimal part of b
+
+        BigDecimal x= (new BigDecimal(_c1)).pow(_a);
+        System.out.println(x.toString());
+        //calculating c1^a
+        
+        BigDecimal r= (new BigDecimal(_c2)).pow(_b);
+        System.out.println(r.toString());
+        //calculating (c2^-1)^|b|
+        
+        BigDecimal y = r.multiply(new BigDecimal(String.valueOf(y2)));
+        System.out.println(y.toString());
+        //multiplying r by the decimal (exponential) value
+
+        BigDecimal M= x.multiply(y);
+        String M1=M.toString();
+        M1=M1.substring(0,M1.indexOf('.'));
+        BigInteger M2=(new BigInteger(M1)).mod(new BigInteger(String.valueOf(N)));
+        System.out.println(M2.toString());
+    }
+
+    public static long modinv(long a, long n)
+    {
+        long x;
+        //ax = 1 (mod n)
+        a=a%n;
+        if (a==1)
+            return 1;
+        int i=2;
+        while(true)
+        {
+            long chk=(a*i)%n;
+            if(chk == 1)
+            {
+                x=i;
+                break; 
+            }
+            else
+                i++;
+        }
+        return x;
+    } 
+}
