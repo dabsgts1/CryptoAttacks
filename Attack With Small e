@@ -1,0 +1,21 @@
+import java.util.*;
+class AttackWithSmallE
+{
+    public static void main()
+    {
+        Scanner s=new Scanner(System.in);
+        System.out.println("Condition: M < N^{1/e}");
+        System.out.println("Enter e");
+        long e=s.nextLong();
+        System.out.println("Enter C");
+        long C=s.nextLong();
+        double x1 = C;
+        double x2 = C / e;  
+        while (Math.abs(x1 - x2) > 0.0001) 
+        {
+            x1 = x2;
+            x2 = ((e - 1.0) * x2 + C / Math.pow(x2, e - 1.0)) / e;
+        }  
+        System.out.println("M = "+(long)x2);
+    }
+}
